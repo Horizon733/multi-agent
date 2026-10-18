@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Illustration Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<div class="shell">
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="brand">
+      <div class="orb" aria-hidden="true"></div>
+      <div>
+        <h1 class="title">Illustration <em>Studio</em></h1>
+        <div class="subtitle">LOCAL · MULTI-AGENT · PROMPT → GENERATE → CRITIQUE</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="new">New</button>
+        <button class="tab" data-tab="gallery">Gallery</button>
+      </nav>
+      <div class="status-pill" id="status-pill"><span class="dot"></span><span id="status-label">Ready</span></div>
+    </div>
+  </header>
+
+  <!-- NEW RUN -->
+  <main id="pane-new" class="pane">
+    <div class="grid-2">
+      <section class="card">
+        <h2 class="card-title">Create</h2>
+        <form id="form">
+          <label class="field">
+            <span class="label">Prompt</span>
+            <textarea name="request" rows="4" required
+              placeholder="e.g. Cross-section of a human heart showing the four chambers and major vessels, textbook style."></textarea>
+          </label>
+
+          <label class="field">
+            <span class="label">Category</span>
+            <div class="select">
+              <select name="category" id="category"></select>
+              <svg class="chev" viewBox="0 0 20 20"><path d="M5 7l5 6 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="hint" id="cat-desc"></p>
+          </label>
+
+          <div class="row">
+            <label class="field grow">
+              <span class="label">Max iterations</span>
+              <input type="number" name="iterations" min="1" max="10" placeholder="3" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="label">Reference images <span class="muted">· optional, up to 10</span></span>
+            <div class="file" id="file-wrap">
+              <input type="file" name="ref" id="ref" multiple accept="image/*" />
+              <span id="file-label">Drop images here or click to browse</span>
+            </div>
+          </label>
+
+          <div class="actions">
+            <button class="btn" type="submit" id="go">Generate <span class="arr">→</span></button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card side">
+        <h2 class="card-title">Pipeline</h2>
+        <ol class="pipeline">
+          <li><strong>Prompt writer</strong><span class="muted">Turns your request + references into a detailed image prompt tuned to the category.</span></li>
+          <li><strong>Image generator</strong><span class="muted">Runs through Unsloth Studio or an in-process diffusers backend.</span></li>
+          <li><strong>Vision critic</strong><span class="muted">Scores the result, audits any text, suggests concrete fixes. Loops until it passes.</span></li>
+        </ol>
+        <div class="kv">
+          <span>Pass score</span><span id="info-pass">—</span>
+          <span>Prompt model</span><span id="info-prompt">—</span>
+          <span>Eval model</span><span id="info-eval">—</span>
+          <span>Image model</span><span id="info-image">—</span>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- LIVE RUN -->
+  <section id="pane-run" class="pane hidden">
+    <div class="card">
+      <h2 class="card-title">Run <span class="muted mono" id="run-id"></span></h2>
+      <div id="status-log" class="log"></div>
+    </div>
+    <div id="best" class="card hero hidden">
+      <div class="hero-left">
+        <h2 class="card-title">Best result <span class="score" id="best-score"></span></h2>
+        <img id="best-img" alt="best output" />
+        <a id="report-link" href="#" target="_blank" class="link">Full report (JSON) →</a>
+      </div>
+    </div>
+    <h3 class="section-title">Attempts</h3>
+    <div id="attempts" class="attempts"></div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="pane-gallery" class="pane hidden">
+    <h2 class="section-title">Past runs</h2>
+    <div id="gallery" class="gallery"></div>
+  </section>
+
+  <footer class="foot">
+    <span class="mono">LOCAL · OFFLINE</span>
+    <span class="pulse" aria-hidden="true"></span>
+    <span class="mono">multi-agent image pipeline · langgraph + ollama + unsloth</span>
+  </footer>
+</div>
+
+<div id="toast-root" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

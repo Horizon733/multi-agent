@@ -1,0 +1,50 @@
+[project]
+name = "imagegen-agents"
+version = "0.1.0"
+description = "Multi-agent image generation: prompt writer -> image generator -> VLM evaluator loop"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "langgraph>=0.6",
+    "ollama>=0.5",
+    "httpx>=0.27",
+    "pillow>=10",
+    "pydantic>=2.7",
+    "python-dotenv>=1.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+# Only needed for IMAGE_BACKEND=diffusers (FLUX.2 klein in-process). The Studio backend needs none of this.
+diffusers = [
+    "torch>=2.7",
+    "diffusers>=0.41",
+    "transformers>=4.56",
+    "accelerate>=1.10",
+    "bitsandbytes>=0.46",
+    "sentencepiece",
+]
+
+[project.scripts]
+imagegen = "imagegen_agents.cli:main"
+imagegen-web = "imagegen_agents.web.server:main"
+
+[tool.uv]
+package = true
+
+# CUDA build of torch for the RTX 4060 (the PyPI wheel on Windows is CPU-only).
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/imagegen_agents"]
